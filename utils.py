@@ -3,6 +3,7 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from pathlib import Path
+from constants import GEEZ_CHARACTERS
 
 def extract_images_labels(dataset):
     """A helper function to extract images and labels from tf.data.Dataset"""
@@ -90,4 +91,19 @@ def show_images(X, Y, num_of_images=20, cols=10):
         images=X[random_indices],
         titles=titles,
         cols=cols
+    )
+
+def show_images_with_prediction(model, X, Y, num_of_images=20, cols=10):
+    """Show randomly selected images along with the a given model's predictions"""
+    random_indices = np.random.choice(len(X), size=num_of_images, replace=False)
+    predictions = model.predict(X[random_indices])
+    softmax_predictions = tf.nn.softmax(predictions)
+    predicted_labels = np.argmax(softmax_predictions, axis=1)
+    titles = [f"{GEEZ_CHARACTERS[Y[i]] | {GEEZ_CHARACTERS[predicted_labels[idx]]}}" for idx, i in enumerate(random_indices)]
+    
+    display_image(
+        images=X[random_indices],
+        titles=titles,
+        cols=cols,
+        suptitle="Actual vs. Predicted"
     )
