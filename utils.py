@@ -107,3 +107,27 @@ def show_images_with_prediction(model, X, Y, num_of_images=20, cols=10):
         cols=cols,
         suptitle="Actual vs. Predicted"
     )
+
+def show_misclassifications(model, X, Y, num_of_images=20, cols=10):
+    """Finds and displays misclassified examples"""
+    predictions = model.predict(X)
+    softmax_predictions = tf.nn.softmax(predictions)
+    predicted_labels = np.argmax(softmax_predictions, axis=1)
+    
+    errors = np.where(predicted_labels != Y)[0]
+    total_errors = len(errors)
+    
+    if total_errors == 0:
+        print("No misclassifications found")
+        return
+
+    # Limit the number of displayed misclassification using num_of_images as a limit
+    errors = errors[:num_of_images]
+    titles = [f"{GEEZ_CHARACTERS[Y[i]]} | {GEEZ_CHARACTERS[predicted_labels[i]]}" for i in errors]
+
+    display_image(
+        images=X[errors],
+        titles=titles,
+        cols=cols,
+        suptitle=f"Actual | Predicted {len(errors)} misclassifications shown out of {total_errors} misclassifications."
+    )
