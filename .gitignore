@@ -1,0 +1,7 @@
+# Ignore the dataset
+dataset/
+
+# Ignore auto generated files
+__pycache__/
+*.py[cod]
+*$py.class
