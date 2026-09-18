@@ -28,6 +28,7 @@ def load_data(dir):
         train_path,
         labels="inferred",
         label_mode="int",
+        color_mode = "grayscale",
         image_size=(32,32),
         batch_size=1024, # Using a larger batch size to quickly load the images in chunks
         shuffle=False     
@@ -38,6 +39,7 @@ def load_data(dir):
         test_path,
         labels="inferred",
         label_mode="int",
+        color_mode = "grayscale",
         image_size=(32,32),
         batch_size=1024, # Using a larger batch size to quickly load the images in chunks
         shuffle=False
