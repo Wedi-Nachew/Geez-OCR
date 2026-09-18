@@ -39,7 +39,7 @@ def build_deeper_ann():
 
    return model
 
-def build_regularized_ann():
+def build_regularized_deeper_ann():
     """Builds a regularized version of the deeper ANN model"""
     model = Sequential([
        Flatten(input_shape=(32,32)),
