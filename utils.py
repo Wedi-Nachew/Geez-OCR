@@ -4,6 +4,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 from pathlib import Path
 from constants import GEEZ_CHARACTERS
+from sklearn.model_selection import StratifiedKFold
 
 def extract_images_labels(dataset):
     """A helper function to extract images and labels from tf.data.Dataset"""
@@ -52,6 +53,82 @@ def load_data(dir):
     X_test, y_test = extract_images_labels(test_ds) 
     
     return X_train, y_train, X_test, y_test
+
+def cross_validate_model(build_model, X, y, epochs=10, batch_size=64):
+    cv = StratifiedKFold(
+        n_splits=5,
+        shuffle=True,
+        random_state=42
+    )
+
+    results = []
+    
+    for fold, (train_idx, cv_idx) in enumerate(
+        cv.split(X, y),
+        start=1
+    ):
+        print(f"\n========== Fold {fold} ==========")
+
+        X_fold_train = X[train_idx]
+        X_fold_cv = X[cv_idx]
+        
+        y_fold_train = y[train_idx] 
+        y_fold_cv = y[cv_idx]
+        
+        # build the model
+        model = build_model()
+        
+        history = model.fit(
+            X_fold_train,
+            y_fold_train,
+            
+            validation_data=(
+                X_fold_cv,
+                y_fold_cv
+            ),
+            
+            epochs=epochs,
+            batch_size=batch_size,
+            verbose=1
+        )
+
+        _, train_accuracy = model.evaluate(
+            X_fold_train,
+            y_fold_train,
+            verbose=0
+        )
+
+        _, cv_accuracy = model.evaluate(
+            X_fold_cv,
+            y_fold_cv,
+            verbose=0
+        )
+
+        results.append({
+            "fold": fold,
+            "train_accuracy": train_accuracy,
+            "cv_accuracy": cv_accuracy,
+            "gap": train_accuracy - cv_accuracy
+        })
+
+        print(f"Train accuracy: {train_accuracy:.4f}")
+        print(f"Cross validation accuracy: {cv_accuracy:.4f}")
+        print(f"Train-Validation gap: {train_accuracy - cv_accuracy:.4f}")
+    
+    return results
+
+def summarize_results(results):
+    cv_scores = [result['cv_accuracy'] for result in results]
+    train_scores = [result['train_accuracy'] for result in results]
+    gaps = [result["gap"] for result in results]
+    
+    return {
+        "mean_train_accuracy": np.mean(train_scores),
+        "mean_cv_accuracy": np.mean(cv_scores),
+        "std_train_accuracy": np.std(train_scores),
+        "std_cv_accuracy": np.std(cv_scores),
+        "mean_gap": np.mean(gaps)
+    }
 
 def display_image(images, titles=None, suptitle=None, cols=10, img_shape=(32,32)):
     """Core rendering method any collection of 1D/2D image arrays"""
