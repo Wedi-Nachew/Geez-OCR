@@ -6,6 +6,10 @@ from pathlib import Path
 from constants import GEEZ_CHARACTERS
 from sklearn.model_selection import StratifiedKFold
 
+# Prevents tensorflow from treating the folder names as strings and sorting them 
+# alphabetically("0", "1", "10"..) and forces it to load the folders in exact numerical order
+ordered_directory_names = [str(i) for i in range(len(GEEZ_CHARACTERS))] 
+
 def extract_images_labels(dataset):
     """A helper function to extract images and labels from tf.data.Dataset"""
     # Iterate over the dataset and concatnate the batches directly 
@@ -35,7 +39,8 @@ def load_data(dir):
         color_mode = "grayscale",
         image_size=(32,32),
         batch_size=1024, # Using a larger batch size to quickly load the images in chunks
-        shuffle=False     
+        shuffle=False,     
+        class_names=ordered_directory_names
     )
 
     # Load the test data from the dataset files with inferred label
@@ -46,7 +51,8 @@ def load_data(dir):
         color_mode = "grayscale",
         image_size=(32,32),
         batch_size=1024, # Using a larger batch size to quickly load the images in chunks
-        shuffle=False
+        shuffle=False,
+        class_names=ordered_directory_names
     )
 
     X_train, y_train = extract_images_labels(train_ds)
@@ -130,7 +136,7 @@ def summarize_results(results):
         "mean_gap": np.mean(gaps)
     }
 
-def display_image(images, titles=None, suptitle=None, cols=10, img_shape=(32,32)):
+def display_images(images, titles=None, suptitle=None, cols=10, img_shape=(32,32)):
     """Core rendering method any collection of 1D/2D image arrays"""
     m = len(images)
     if m == 0:
@@ -138,7 +144,7 @@ def display_image(images, titles=None, suptitle=None, cols=10, img_shape=(32,32)
         return
     
     rows = math.ceil(m / cols)
-    fig, axes = plt.subplots(rows, cols, figsize=(cols*1.2, rows*1.4), sequeeze=False)
+    fig, axes = plt.subplots(rows, cols, figsize=(cols*1.2, rows*1.4), squeeze=False)
     fig.tight_layout(pad=0.2, rect=[0, 0.03, 1, 0.93])
     
     axes_flat = axes.flatten()
@@ -147,7 +153,7 @@ def display_image(images, titles=None, suptitle=None, cols=10, img_shape=(32,32)
         ax = axes_flat[i]
         ax.imshow(images[i].reshape(img_shape), cmap="gray")
         if titles is not None:
-            ax.set_title(str(titles[i]))
+            ax.set_title(str(titles[i]), fontname="Ebrima")
         ax.set_axis_off()
     
     # Hide any unused trailing subplots in a column if any
@@ -162,9 +168,9 @@ def display_image(images, titles=None, suptitle=None, cols=10, img_shape=(32,32)
 def show_images(X, Y, num_of_images=20, cols=10):
     """Show randomly selected images"""
     random_indices = np.random.choice(len(X), size=num_of_images, replace=False)
-    titles = [f"{Y[i]}" for i in random_indices]
+    titles = [f"{GEEZ_CHARACTERS[Y[i]]}" for i in random_indices]
 
-    display_image(
+    display_images(
         images=X[random_indices],
         titles=titles,
         cols=cols
@@ -178,7 +184,7 @@ def show_images_with_prediction(model, X, Y, num_of_images=20, cols=10):
     predicted_labels = np.argmax(softmax_predictions, axis=1)
     titles = [f"{GEEZ_CHARACTERS[Y[i]] | {GEEZ_CHARACTERS[predicted_labels[idx]]}}" for idx, i in enumerate(random_indices)]
     
-    display_image(
+    display_images(
         images=X[random_indices],
         titles=titles,
         cols=cols,
@@ -202,7 +208,7 @@ def show_misclassifications(model, X, Y, num_of_images=20, cols=10):
     errors = errors[:num_of_images]
     titles = [f"{GEEZ_CHARACTERS[Y[i]]} | {GEEZ_CHARACTERS[predicted_labels[i]]}" for i in errors]
 
-    display_image(
+    display_images(
         images=X[errors],
         titles=titles,
         cols=cols,
