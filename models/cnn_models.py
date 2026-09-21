@@ -3,6 +3,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Flatten, Dense, Conv2D, MaxPool2D, BatchNormalization, Dropout, Input
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
+from tensorflow.keras.metrics import SparseCategoricalAccuracy
 
 def build_simpler_cnn():
     """Builds a simple convolutional neural network"""
@@ -17,9 +18,9 @@ def build_simpler_cnn():
     ], name="Basic_CNN")
     
     model.compile(
-        optimizer=Adam(0.01),
+        optimizer=Adam(0.0005),
         loss=SparseCategoricalCrossentropy(from_logits=True),
-        metrics=["accuracy"]
+        metrics=[SparseCategoricalAccuracy(name="accuracy")]
     )
 
     return model
@@ -40,9 +41,9 @@ def build_deeper_cnn():
     ], name = "Deeper_CNN_Model")
 
     model.compile(
-        optimizer=Adam(0.01),
+        optimizer=Adam(0.0005),
         loss=SparseCategoricalCrossentropy(from_logits=True),
-        metrics=["accuracy"]
+        metrics=[SparseCategoricalAccuracy(name="accuracy")]
     )
     
     return model
@@ -72,9 +73,9 @@ def build_regularized_deeper_cnn():
     ], name = "Regularized_Deeper_Model")
 
     model.compile(
-        optimizer=Adam(0.01),
+        optimizer=Adam(0.0005),
         loss=SparseCategoricalCrossentropy(from_logits=True),
-        metrics=["accuracy"]
+        metrics=[SparseCategoricalAccuracy(name="accuracy")]
     )
     
     return model

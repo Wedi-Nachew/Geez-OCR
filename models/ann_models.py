@@ -3,6 +3,7 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Flatten, Dense, Dropout, Input
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.metrics import SparseCategoricalAccuracy
 
 def build_simpler_ann():
     """Builds a simple artificial neural network"""
@@ -15,9 +16,9 @@ def build_simpler_ann():
     ], name="Basic_ANN")
 
     model.compile(
-       optimizer=Adam(0.01),
+       optimizer=Adam(0.0005),
        loss=SparseCategoricalCrossentropy(from_logits=True),
-       metrics=["accuracy"]
+       metrics=[SparseCategoricalAccuracy(name="accuracy")]
     )
     
     return model
@@ -33,9 +34,9 @@ def build_deeper_ann():
    ], name="Deeper_ANN")
 
    model.compile(
-       optimizer=Adam(0.01),
+       optimizer=Adam(0.0005),
        loss=SparseCategoricalCrossentropy(from_logits=True),
-       metrics=["accuracy"]
+       metrics=[SparseCategoricalAccuracy(name="accuracy")]
    )
 
    return model
@@ -56,9 +57,9 @@ def build_regularized_deeper_ann():
    ], name="Regularized_Deeper_ANN")
 
     model.compile(
-       optimizer=Adam(0.01),
+       optimizer=Adam(0.0005),
        loss=SparseCategoricalCrossentropy(from_logits=True),
-       metrics=["accuracy"]
+       metrics=[SparseCategoricalAccuracy(name="accuracy")]
     )
 
     return model
