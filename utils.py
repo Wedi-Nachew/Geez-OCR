@@ -55,12 +55,24 @@ def load_data(dir):
         class_names=ordered_directory_names
     )
 
+    # Extract image tensors and labels
     X_train, y_train = extract_images_labels(train_ds)
     X_test, y_test = extract_images_labels(test_ds) 
-    
-    return X_train, y_train, X_test, y_test
 
-def cross_validate_model(build_model, X, y, epochs=10, batch_size=64):
+    # Extract original file paths
+    train_paths = np.array(train_ds.file_paths)
+    test_paths = np.array(test_ds.file_paths)
+    
+    return (X_train, y_train, train_paths), (X_test, y_test, test_paths)
+
+def cross_validate_model(build_model, X, y, epochs=10, batch_size=64, callback=None):
+    if callback is None:
+        callbacks_list = []
+    elif isinstance(callback, list):
+        callbacks_list = callback
+    else:
+        callbacks_list = [callback]
+    
     cv = StratifiedKFold(
         n_splits=5,
         shuffle=True,
@@ -73,7 +85,7 @@ def cross_validate_model(build_model, X, y, epochs=10, batch_size=64):
         cv.split(X, y),
         start=1
     ):
-        print(f"\n========== Fold {fold} ==========")
+        print("\n","="*21, "Fold", fold,  "="*21)
 
         X_fold_train = X[train_idx]
         X_fold_cv = X[cv_idx]
@@ -95,31 +107,36 @@ def cross_validate_model(build_model, X, y, epochs=10, batch_size=64):
             
             epochs=epochs,
             batch_size=batch_size,
+            verbose=1,
+            callbacks = callbacks_list
+        )
+
+        _, train_accuracy, train_top5_accuracy = model.evaluate(
+            X_fold_train,
+            y_fold_train,
             verbose=1
         )
 
-        _, train_accuracy = model.evaluate(
-            X_fold_train,
-            y_fold_train,
-            verbose=0
-        )
-
-        _, cv_accuracy = model.evaluate(
+        _, cv_accuracy, cv_top5_accuracy = model.evaluate(
             X_fold_cv,
             y_fold_cv,
-            verbose=0
+            verbose=1
         )
 
         results.append({
             "fold": fold,
             "train_accuracy": train_accuracy,
             "cv_accuracy": cv_accuracy,
-            "gap": train_accuracy - cv_accuracy
+            "gap": train_accuracy - cv_accuracy,
+            "train_top5_accuracy": train_top5_accuracy,
+            "cv_top5_accuracy": cv_top5_accuracy
         })
 
         print(f"Train accuracy: {train_accuracy:.4f}")
         print(f"Cross validation accuracy: {cv_accuracy:.4f}")
         print(f"Train-Validation gap: {train_accuracy - cv_accuracy:.4f}")
+        print(f"Train top 5 accuracy: {train_top5_accuracy:.4f}")
+        print(f"Cross top 5 accuracy: {cv_top5_accuracy:.4f}")
     
     return results
 
@@ -127,13 +144,17 @@ def summarize_results(results):
     cv_scores = [result['cv_accuracy'] for result in results]
     train_scores = [result['train_accuracy'] for result in results]
     gaps = [result["gap"] for result in results]
+    train_top5_scores = [result["train_top5_accuracy"] for result in results]
+    cv_top5_scores = [result["cv_top5_accuracy"] for result in results]
     
     return {
         "mean_train_accuracy": np.mean(train_scores),
         "mean_cv_accuracy": np.mean(cv_scores),
         "std_train_accuracy": np.std(train_scores),
         "std_cv_accuracy": np.std(cv_scores),
-        "mean_gap": np.mean(gaps)
+        "mean_gap": np.mean(gaps),
+        "mean_train_top5_accuracy": np.mean(train_top5_scores),
+        "mean_cv_top5_accuracy": np.mean(cv_top5_scores)
     }
 
 def display_images(images, titles=None, suptitle=None, cols=10, img_shape=(32,32)):
