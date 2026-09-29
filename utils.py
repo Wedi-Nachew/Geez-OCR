@@ -203,7 +203,7 @@ def show_images_with_prediction(model, X, Y, num_of_images=20, cols=10):
     predictions = model.predict(X[random_indices])
     softmax_predictions = tf.nn.softmax(predictions)
     predicted_labels = np.argmax(softmax_predictions, axis=1)
-    titles = [f"{GEEZ_CHARACTERS[Y[i]] | {GEEZ_CHARACTERS[predicted_labels[idx]]}}" for idx, i in enumerate(random_indices)]
+    titles = [f"{GEEZ_CHARACTERS[Y[i]]} | {GEEZ_CHARACTERS[predicted_labels[idx]]}" for idx, i in enumerate(random_indices)]
     
     display_images(
         images=X[random_indices],
