@@ -28,7 +28,7 @@ This project trains and evaluates deep-learning models to classify isolated Ge'e
 
 ## Dataset
 
-The project uses the [Yaredoffice/geez-characters](https://huggingface.co/datasets/Yaredoffice/geez-characters) dataset, downloaded locally and organized into a directory structure for label inference.
+This project uses a local download of the [Yaredoffice/geez-characters](https://huggingface.co/datasets/Yaredoffice/geez-characters) dataset.
 
 | Property              | Value                          |
 | --------------------- | ------------------------------ |
