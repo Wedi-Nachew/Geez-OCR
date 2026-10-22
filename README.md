@@ -2,6 +2,13 @@
 
 A deep-learning classification project for recognizing handwritten Ge'ez (ግዕዝ) characters. The project experiments with multiple ANN and CNN architectures, selects the most promising model through stratified cross-validation, and trains it for final evaluation.
 
+![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-2.16%2B-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
+![Keras](https://img.shields.io/badge/Keras-3-D00000?style=for-the-badge&logo=keras&logoColor=white)
+![NumPy](https://img.shields.io/badge/NumPy-1.26%2B-013243?style=for-the-badge&logo=numpy&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.3%2B-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)
+![Matplotlib](https://img.shields.io/badge/Matplotlib-3.7%2B-11557C?style=for-the-badge&logo=matplotlib&logoColor=white)
+
 ## Overview
 
 Ge'ez is an ancient South Semitic script originating from the Horn of Africa (northern Ethiopia and southern Eritrea). It is the historical root of modern languages such as Amharic, Tigrinya, and Tigré, and preserves centuries of historical chronicles, philosophical works, traditional medicine, and religious texts including the Ge'ez Bible.
@@ -248,7 +255,7 @@ The following techniques are implemented in the final model:
 | ---------------------- | --------------: | -------------: |
 | Accuracy               |         90.14%  |        85.27%  |
 | Top-5 accuracy         |         99.48%  |        97.82%  |
-| Gap (Train – Val)      |                 |   4.88 pp      |
+| Gap (Train – Val)      |                 |   4.88%     |
 
 ### Full Training Set Evaluation
 
@@ -336,13 +343,13 @@ The project requires Python 3 and the following packages:
 - **scikit-learn** — Stratified K-fold cross-validation, train/test splitting, classification reports
 - **Matplotlib** — Visualization and plotting
 
-No `requirements.txt` file is currently included in the repository. Install the dependencies manually:
+A `requirements.txt` is included in the repository. Install all dependencies with:
 
 ```bash
-pip install tensorflow numpy scikit-learn matplotlib
+pip install -r requirements.txt
 ```
 
-> **Note:** Ensure your TensorFlow version supports the Keras 3 API used in the code (TensorFlow ≥ 2.16 or standalone Keras 3). The saved model uses the `.keras` format.
+> **Note:** TensorFlow ≥ 2.16 is required for the Keras 3 API used throughout the code. The saved model uses the `.keras` format.
 
 ## Usage
 

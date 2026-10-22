@@ -1,0 +1,4 @@
+tensorflow>=2.16          # Model building, training, data loading, augmentation (requires Keras 3 API)
+numpy>=1.26               # Array operations
+scikit-learn>=1.3         # StratifiedKFold, train_test_split, classification_report
+matplotlib>=3.7           # Visualization and plotting
